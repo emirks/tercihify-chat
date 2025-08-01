@@ -19,27 +19,27 @@ import { useTranslations } from "next-intl";
 import { MCPIcon } from "ui/mcp-icon";
 import { WriteIcon } from "ui/write-icon";
 import {
-  FolderOpenIcon,
-  FolderSearchIcon,
-  PlusIcon,
-  Waypoints,
+  // FolderOpenIcon,
+  // FolderSearchIcon,
+  // PlusIcon,
+  // Waypoints,
 } from "lucide-react";
-import { useCallback, useState } from "react";
-import { Skeleton } from "ui/skeleton";
-import { useArchives } from "@/hooks/queries/use-archives";
-import { ArchiveDialog } from "../archive-dialog";
+// import { useCallback, useState } from "react";
+// import { Skeleton } from "ui/skeleton";
+// import { useArchives } from "@/hooks/queries/use-archives";
+// import { ArchiveDialog } from "../archive-dialog";
 
 export function AppSidebarMenus() {
   const router = useRouter();
   const t = useTranslations("");
   const { setOpenMobile } = useSidebar();
-  const [expandedArchive, setExpandedArchive] = useState(false);
-  const [addArchiveDialogOpen, setAddArchiveDialogOpen] = useState(false);
+  // const [expandedArchive, setExpandedArchive] = useState(false);
+  // const [addArchiveDialogOpen, setAddArchiveDialogOpen] = useState(false);
 
-  const { data: archives, isLoading: isLoadingArchives } = useArchives();
-  const toggleArchive = useCallback(() => {
-    setExpandedArchive((prev) => !prev);
-  }, []);
+  // const { data: archives, isLoading: isLoadingArchives } = useArchives();
+  // const toggleArchive = useCallback(() => {
+  //   setExpandedArchive((prev) => !prev);
+  // }, []);
 
   return (
     <SidebarGroup>
@@ -86,7 +86,7 @@ export function AppSidebarMenus() {
             </SidebarMenuItem>
           </Tooltip>
         </SidebarMenu>
-        <SidebarMenu>
+        {/* <SidebarMenu>
           <Tooltip>
             <SidebarMenuItem>
               <Link href="/workflow">
@@ -97,8 +97,8 @@ export function AppSidebarMenus() {
               </Link>
             </SidebarMenuItem>
           </Tooltip>
-        </SidebarMenu>
-        <SidebarMenu className="group/archive">
+        </SidebarMenu> */}
+        {/* <SidebarMenu className="group/archive">
           <Tooltip>
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -160,12 +160,12 @@ export function AppSidebarMenus() {
               </SidebarMenuSub>
             </>
           )}
-        </SidebarMenu>
+        </SidebarMenu> */}
       </SidebarGroupContent>
-      <ArchiveDialog
+      {/* <ArchiveDialog
         open={addArchiveDialogOpen}
         onOpenChange={setAddArchiveDialogOpen}
-      />
+      /> */}
     </SidebarGroup>
   );
 }

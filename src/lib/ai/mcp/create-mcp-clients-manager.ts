@@ -42,7 +42,7 @@ export class MCPClientsManager {
   // Optional storage for persistent configurations
   constructor(
     private storage?: MCPConfigStorage,
-    private autoDisconnectSeconds: number = 60 * 30, // 30 minutes
+    private autoDisconnectSeconds: number = 60 * 30 * 24 * 7, // 7 days
   ) {
     process.on("SIGINT", this.cleanup.bind(this));
     process.on("SIGTERM", this.cleanup.bind(this));
@@ -67,6 +67,18 @@ export class MCPClientsManager {
               }),
             ),
           );
+          await this.persistClient({
+            name: "yokatlas-mcp",
+            config: {
+              command: "uvx",
+              args: [
+                "--from",
+                "git+https://github.com/saidsurucu/yokatlas-mcp",
+                "yokatlas-mcp",
+              ],
+            },
+            // enabled: true,
+          });
         }
       })
       .watch(() => {

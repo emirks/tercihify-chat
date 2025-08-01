@@ -253,7 +253,7 @@ export default function ChatBot({ threadId, initialMessages, slots }: Props) {
       .unwrap();
   }, []);
 
-  const handleThinkingChange = useCallback((thinking: boolean) => {
+  const _handleThinkingChange = useCallback((thinking: boolean) => {
     setThinking(thinking);
   }, []);
 
@@ -420,7 +420,9 @@ export default function ChatBot({ threadId, initialMessages, slots }: Props) {
             append={append}
             thinking={thinking}
             setInput={setInput}
-            onThinkingChange={handleThinkingChange}
+            // toolDisabled={true}
+            voiceDisabled={true}
+            // onThinkingChange={handleThinkingChange}
             isLoading={isLoading || isPendingToolCall}
             onStop={stop}
             onFocus={isFirstTime ? undefined : handleFocus}

@@ -64,7 +64,7 @@ export default function SignInPage() {
       });
   };
 
-  const githubSignIn = () => {
+  const _githubSignIn = () => {
     if (!process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID)
       return toast.warning(t("oauthClientIdNotSet", { provider: "GitHub" }));
     authClient.signIn
@@ -149,10 +149,10 @@ export default function SignInPage() {
               <GoogleIcon className="size-4 fill-foreground" />
               Google
             </Button>
-            <Button variant="outline" onClick={githubSignIn} className="flex-1">
+            {/* <Button variant="outline" onClick={githubSignIn} className="flex-1">
               <GithubIcon className="size-4 fill-foreground" />
               GitHub
-            </Button>
+            </Button> */}
           </div>
 
           <div className="my-8 text-center text-sm text-muted-foreground">

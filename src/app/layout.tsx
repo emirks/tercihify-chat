@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "better-chatbot",
+  title: "tercihify",
   description:
-    "Better Chatbot is a chatbot that uses the Tools to answer questions.",
+    "Tercihify is a chatbot that uses the Tools to answer questions.",
 };
 
 // const themes = BASE_THEMES.flatMap((t) => [t, `${t}-dark`]);

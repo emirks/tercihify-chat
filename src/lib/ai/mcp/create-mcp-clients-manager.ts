@@ -73,7 +73,7 @@ export class MCPClientsManager {
               command: "uvx",
               args: [
                 "--from",
-                "git+https://github.com/saidsurucu/yokatlas-mcp",
+                "git+https://github.com/emirks/yokatlas-mcp",
                 "yokatlas-mcp",
               ],
             },

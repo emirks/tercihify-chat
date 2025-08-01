@@ -67,14 +67,12 @@ export class MCPClientsManager {
               }),
             ),
           );
+
+          // Check if yokatlas-mcp already exists before persisting
           await this.persistClient({
             name: "yokatlas-mcp",
             config: {
-              command: "python",
-              args: ["yokatlas-mcp/yokatlas_mcp_server.py"],
-              env: {
-                PYTHONPATH: "./yokatlas-mcp",
-              },
+              url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
             },
             // enabled: true,
           });

@@ -40,6 +40,10 @@ export const BASE_THEMES = [
 
 export const SUPPORTED_LOCALES = [
   {
+    code: "tr",
+    name: "Turkish 🇹🇷",
+  },
+  {
     code: "en",
     name: "English 🇺🇸",
   },

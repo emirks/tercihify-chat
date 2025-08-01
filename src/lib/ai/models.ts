@@ -18,6 +18,7 @@ const _ollama = createOllama({
 
 const staticModels = {
   openai: {
+    "gpt-4o": openai("gpt-4o"),
     "gpt-4.1": openai("gpt-4.1"),
     "gpt-4.1-mini": openai("gpt-4.1-mini"),
   },

@@ -70,12 +70,11 @@ export class MCPClientsManager {
           await this.persistClient({
             name: "yokatlas-mcp",
             config: {
-              command: "uvx",
-              args: [
-                "--from",
-                "git+https://github.com/emirks/yokatlas-mcp",
-                "yokatlas-mcp",
-              ],
+              command: "python",
+              args: ["yokatlas-mcp/yokatlas_mcp_server.py"],
+              env: {
+                PYTHONPATH: "./yokatlas-mcp",
+              },
             },
             // enabled: true,
           });

@@ -15,10 +15,10 @@
     "incremental": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noUnusedLocals": true,
     "strictPropertyInitialization": false,
-    "noUnusedParameters": false,
     "noUncheckedSideEffectImports": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noImplicitAny": false,
     "plugins": [
       {

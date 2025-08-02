@@ -159,6 +159,66 @@ describe("MCPClientsManager", () => {
 
       await expect(manager.init()).rejects.toThrow("Storage error");
     });
+
+    it("should remove duplicate yokatlas-mcp servers and create the allowed one", async () => {
+      const yokatlasMockServer1 = {
+        id: "yokatlas-1",
+        name: "yokatlas-mcp",
+        config: { url: "https://old-url.com" },
+        enabled: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const yokatlasMockServer2 = {
+        id: "yokatlas-2",
+        name: "yokatlas-mcp",
+        config: { url: "https://another-old-url.com" },
+        enabled: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Mock existing yokatlas-mcp servers
+      vi.mocked(mockStorage.loadAll).mockResolvedValue([
+        mockServer,
+        yokatlasMockServer1,
+        yokatlasMockServer2,
+      ]);
+
+      const removeClientSpy = vi.spyOn(manager, "removeClient");
+      const persistClientSpy = vi.spyOn(manager, "persistClient");
+
+      await manager.init();
+
+      // Should remove both existing yokatlas-mcp servers
+      expect(removeClientSpy).toHaveBeenCalledWith("yokatlas-1");
+      expect(removeClientSpy).toHaveBeenCalledWith("yokatlas-2");
+
+      // Should create the allowed yokatlas-mcp server
+      expect(persistClientSpy).toHaveBeenCalledWith({
+        name: "yokatlas-mcp",
+        config: {
+          url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
+        },
+      });
+    });
+
+    it("should create yokatlas-mcp when no duplicates exist", async () => {
+      vi.mocked(mockStorage.loadAll).mockResolvedValue([mockServer]);
+
+      const persistClientSpy = vi.spyOn(manager, "persistClient");
+
+      await manager.init();
+
+      // Should create the allowed yokatlas-mcp server
+      expect(persistClientSpy).toHaveBeenCalledWith({
+        name: "yokatlas-mcp",
+        config: {
+          url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
+        },
+      });
+    });
   });
 
   describe("addClient", () => {

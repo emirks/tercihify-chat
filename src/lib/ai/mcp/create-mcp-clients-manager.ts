@@ -68,28 +68,33 @@ export class MCPClientsManager {
             ),
           );
 
-          // Check if yokatlas-mcp already exists before persisting
-          const existingClients = Array.from(this.clients.values());
-          const hasYokAtlasMcp = existingClients.some(
-            ({ name }) => name === "yokatlas-mcp",
+          // Check for existing yokatlas-mcp servers and remove duplicates
+          const existingClients = Array.from(this.clients.entries());
+          const yokAtlasMcpClients = existingClients.filter(
+            ([_, { name }]) => name === "yokatlas-mcp",
           );
 
-          if (!hasYokAtlasMcp) {
+          if (yokAtlasMcpClients.length > 0) {
             logger.info(
-              "🔧 Adding default yokatlas-mcp server (not found in existing clients)",
+              `🔧 Found ${yokAtlasMcpClients.length} existing yokatlas-mcp server(s), removing duplicates`,
             );
-            await this.persistClient({
-              name: "yokatlas-mcp",
-              config: {
-                url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
-              },
-              // enabled: true,
-            });
-          } else {
-            logger.info(
-              "🔧 yokatlas-mcp server already exists, skipping creation",
+            // Remove all existing yokatlas-mcp clients
+            await Promise.allSettled(
+              yokAtlasMcpClients.map(([id]) => this.removeClient(id)),
             );
           }
+
+          // Always create the allowed yokatlas-mcp server with correct configuration
+          logger.info(
+            "🔧 Adding default yokatlas-mcp server with allowed configuration",
+          );
+          await this.persistClient({
+            name: "yokatlas-mcp",
+            config: {
+              url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
+            },
+            // enabled: true,
+          });
         }
       })
       .watch(() => {

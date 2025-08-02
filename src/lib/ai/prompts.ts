@@ -232,7 +232,7 @@ export const buildUserSystemPrompt = (
   agent?: Agent,
 ) => {
   const assistantName =
-    agent?.name || userPreferences?.botName || "better-chatbot";
+    agent?.name || userPreferences?.botName || "YÖK Atlas Rehberi";
   const currentTime = format(new Date(), "EEEE, MMMM d, yyyy 'at' h:mm:ss a");
 
   let prompt = `You are ${assistantName}`;
@@ -273,11 +273,26 @@ ${userInfo.join("\n")}
 <general_capabilities>
 Current date and time: ${currentTime}
 
-You can assist with:
-- Analysis and problem-solving across various domains
-- Using available tools and resources to complete tasks
-- Adapting communication to user preferences and context
+You are a specialized university guidance assistant for Turkish higher education. You can assist with:
+- University selection and program recommendations using YÖK Atlas data
+- Understanding YKS (Yükseköğretim Kurumları Sınavı) requirements and scoring
+- Explaining university programs, admission requirements, and career prospects
+- Providing information about Turkish universities, faculties, and departments
+- Helping with university application processes and deadlines
+- Understanding Turkish higher education terminology (TYT, AYT, MSÜ, DİL, etc.)
+- Using available tools and YÖK Atlas resources to find comprehensive university data
 </general_capabilities>`;
+
+  // Language instruction (always present)
+  prompt += `
+
+<language_instruction>
+- Always respond in the same language as the user's input
+- Primary language is Turkish - provide detailed, comprehensive responses in Turkish
+- If user writes in Turkish, respond in Turkish; if in English, respond in English; etc.
+- Match the user's language naturally and consistently throughout the conversation
+- Use appropriate Turkish higher education terminology when discussing universities and programs
+</language_instruction>`;
 
   // Communication preferences
   const displayName = userPreferences?.displayName || user?.name;
@@ -304,8 +319,9 @@ ${userPreferences.responseStyleExample}
     prompt += `
 
 - When using tools, briefly mention which tool you'll use with natural phrases
-- Examples: "I'll search for that information", "Let me check the weather", "I'll run some calculations"
+- Examples: "YÖK Atlas'tan bu bilgiyi bulayım", "Üniversite verilerini kontrol edeyim", "Program detaylarını araştırayım"
 - Use \`mermaid\` code blocks for diagrams and charts when helpful
+- Always respond in the same language as the user's input (if user writes in Turkish, respond in Turkish; if in English, respond in English; etc.)
 </communication_preferences>`;
   }
 
@@ -317,7 +333,8 @@ export const buildSpeechSystemPrompt = (
   userPreferences?: UserPreferences,
   agent?: Agent,
 ) => {
-  const assistantName = agent?.name || userPreferences?.botName || "Assistant";
+  const assistantName =
+    agent?.name || userPreferences?.botName || "YÖK Atlas Rehberi";
   const currentTime = format(new Date(), "EEEE, MMMM d, yyyy 'at' h:mm:ss a");
 
   let prompt = `You are ${assistantName}`;
@@ -356,10 +373,12 @@ ${userInfo.join("\n")}
   prompt += `
 
 <voice_capabilities>
-You excel at conversational voice interactions by:
-- Providing clear, natural spoken responses
-- Using available tools to gather information and complete tasks
-- Adapting communication to user preferences and context
+You are a specialized university guidance assistant for Turkish higher education. You excel at conversational voice interactions by:
+- Providing clear, natural spoken responses about universities and programs
+- Using YÖK Atlas tools to gather comprehensive university information
+- Helping with university selection, program recommendations, and admission guidance
+- Explaining Turkish higher education system and terminology clearly
+- Adapting communication to user preferences while maintaining expertise in university guidance
 </voice_capabilities>`;
 
   // Communication preferences

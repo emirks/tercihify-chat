@@ -69,13 +69,27 @@ export class MCPClientsManager {
           );
 
           // Check if yokatlas-mcp already exists before persisting
-          await this.persistClient({
-            name: "yokatlas-mcp",
-            config: {
-              url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
-            },
-            // enabled: true,
-          });
+          const existingClients = Array.from(this.clients.values());
+          const hasYokAtlasMcp = existingClients.some(
+            ({ name }) => name === "yokatlas-mcp",
+          );
+
+          if (!hasYokAtlasMcp) {
+            logger.info(
+              "🔧 Adding default yokatlas-mcp server (not found in existing clients)",
+            );
+            await this.persistClient({
+              name: "yokatlas-mcp",
+              config: {
+                url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
+              },
+              // enabled: true,
+            });
+          } else {
+            logger.info(
+              "🔧 yokatlas-mcp server already exists, skipping creation",
+            );
+          }
         }
       })
       .watch(() => {

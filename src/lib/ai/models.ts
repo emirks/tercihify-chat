@@ -1,6 +1,6 @@
 // models.ts
 import { createOllama } from "ollama-ai-provider";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import { anthropic } from "@ai-sdk/anthropic";
 import { xai } from "@ai-sdk/xai";
@@ -16,30 +16,36 @@ const _ollama = createOllama({
   baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
 });
 
+// Configure OpenAI with organization ID if provided
+const _openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  organization: process.env.OPENAI_API_KEY,
+});
+
 const staticModels = {
   openai: {
-    "gpt-4o": openai("gpt-4o"),
-    "gpt-4.1": openai("gpt-4.1"),
-    "gpt-4.1-mini": openai("gpt-4.1-mini"),
+    "gpt-4o": _openai("gpt-4o"),
+    "gpt-4.1": _openai("gpt-4.1"),
+    "gpt-4.1-mini": _openai("gpt-4.1-mini"),
   },
-  // google: {
-  //   "gemini-2.5-flash": google("gemini-2.5-flash", {}),
-  //   "gemini-2.5-pro": google("gemini-2.5-pro"),
-  // },
-  // anthropic: {
-  //   "claude-4-sonnet": anthropic("claude-4-sonnet-20250514"),
-  //   "claude-4-opus": anthropic("claude-4-opus-20250514"),
-  //   "claude-3-7-sonnet": anthropic("claude-3-7-sonnet-latest"),
-  // },
-  // xai: {
-  //   "grok-3": xai("grok-3-latest"),
-  //   "grok-3-mini": xai("grok-3-mini-latest"),
-  // },
-  // ollama: {
-  //   "gemma3:1b": ollama("gemma3:1b"),
-  //   "gemma3:4b": ollama("gemma3:4b"),
-  //   "gemma3:12b": ollama("gemma3:12b"),
-  // },
+  google: {
+    "gemini-2.5-flash": google("gemini-2.5-flash", {}),
+    "gemini-2.5-pro": google("gemini-2.5-pro"),
+  },
+  anthropic: {
+    "claude-4-sonnet": anthropic("claude-4-sonnet-20250514"),
+    "claude-4-opus": anthropic("claude-4-opus-20250514"),
+    "claude-3-7-sonnet": anthropic("claude-3-7-sonnet-latest"),
+  },
+  xai: {
+    "grok-3": xai("grok-3-latest"),
+    "grok-3-mini": xai("grok-3-mini-latest"),
+  },
+  ollama: {
+    "gemma3:1b": _ollama("gemma3:1b"),
+    "gemma3:4b": _ollama("gemma3:4b"),
+    "gemma3:12b": _ollama("gemma3:12b"),
+  },
   openRouter: {
     "qwen3-235b-a22b-2507": openrouter("qwen/qwen3-235b-a22b-2507"),
     "qwen/qwen3-coder": openrouter("qwen/qwen3-coder"),

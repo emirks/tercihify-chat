@@ -2,7 +2,7 @@
 import { createOllama } from "ollama-ai-provider";
 import { createOpenAI } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
-import { anthropic } from "@ai-sdk/anthropic";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { xai } from "@ai-sdk/xai";
 import { openrouter } from "@openrouter/ai-sdk-provider";
 import { LanguageModel } from "ai";
@@ -22,6 +22,11 @@ const _openai = createOpenAI({
   ...(process.env.OPENAI_ORG_ID && { organization: process.env.OPENAI_ORG_ID }),
 });
 
+// Configure Anthropic with API key
+const _anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
 const staticModels = {
   google: {
     "gemini-2.5-pro": google("gemini-2.5-pro"),
@@ -33,9 +38,9 @@ const staticModels = {
     "gpt-4.1-mini": _openai("gpt-4.1-mini"),
   },
   anthropic: {
-    "claude-4-sonnet": anthropic("claude-4-sonnet-20250514"),
-    "claude-4-opus": anthropic("claude-4-opus-20250514"),
-    "claude-3-7-sonnet": anthropic("claude-3-7-sonnet-latest"),
+    "claude-4-sonnet": _anthropic("claude-4-sonnet-20250514"),
+    "claude-4-opus": _anthropic("claude-4-opus-20250514"),
+    "claude-3-7-sonnet": _anthropic("claude-3-7-sonnet-latest"),
   },
   xai: {
     "grok-3": xai("grok-3-latest"),

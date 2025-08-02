@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/static/
+Disallow: /*.json$
+
+# Sitemaps
+Sitemap: https://tercihify.com/sitemap.xml 

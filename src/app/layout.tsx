@@ -18,9 +18,69 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "tercihify",
+  title: "Tercihify - Akıllı Tercih Asistanı",
   description:
-    "Tercihify is a chatbot that uses the Tools to answer questions.",
+    "Tercihify, akıllı tercih asistanıdır. Tercihify, tercih sürecinizi kolaylaştırır ve tercihlerinizi yönetir.",
+  keywords: [
+    "tercih asistanı",
+    "akıllı tercih",
+    "karar verme",
+    "tercih yönetimi",
+    "yapay zeka",
+    "chat bot",
+    "tercih analizi",
+  ],
+  authors: [{ name: "Tercihify Team" }],
+  creator: "@emirkisa",
+  publisher: "Tercihify",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    url: "https://tercihify.com", // Replace with your actual domain
+    title: "Tercihify - Akıllı Tercih Asistanı",
+    description:
+      "Tercihify, akıllı tercih asistanıdır. Tercihify, tercih sürecinizi kolaylaştırır ve tercihlerinizi yönetir.",
+    siteName: "Tercihify",
+    images: [
+      {
+        url: "/og-image.png", // You'll need to add this image
+        width: 1200,
+        height: 630,
+        alt: "Tercihify - Akıllı Tercih Asistanı",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tercihify - Akıllı Tercih Asistanı",
+    description:
+      "Tercihify, akıllı tercih asistanıdır. Tercihify, tercih sürecinizi kolaylaştırır ve tercihlerinizi yönetir.",
+    images: ["/og-image.png"], // Same image as OpenGraph
+    creator: "@tercihify", // Replace with your actual Twitter handle
+  },
+  verification: {
+    google: "your-google-verification-code", // Add when you verify with Google Search Console
+    // yandex: "your-yandex-verification-code", // For Yandex (popular in Turkey)
+  },
+  alternates: {
+    canonical: "https://tercihify.com", // Replace with your actual domain
+    languages: {
+      "tr-TR": "/tr",
+      "en-US": "/en",
+    },
+  },
+  category: "Technology",
 };
 
 // const themes = BASE_THEMES.flatMap((t) => [t, `${t}-dark`]);

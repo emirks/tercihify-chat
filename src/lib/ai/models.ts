@@ -23,14 +23,14 @@ const _openai = createOpenAI({
 });
 
 const staticModels = {
+  google: {
+    "gemini-2.5-pro": google("gemini-2.5-pro"),
+    "gemini-2.5-flash": google("gemini-2.5-flash", {}),
+  },
   openai: {
     "gpt-4o": _openai("gpt-4o"),
     "gpt-4.1": _openai("gpt-4.1"),
     "gpt-4.1-mini": _openai("gpt-4.1-mini"),
-  },
-  google: {
-    "gemini-2.5-flash": google("gemini-2.5-flash", {}),
-    "gemini-2.5-pro": google("gemini-2.5-pro"),
   },
   anthropic: {
     "claude-4-sonnet": anthropic("claude-4-sonnet-20250514"),

@@ -271,6 +271,8 @@ ${userInfo.join("\n")}
   prompt += `
 
 <general_capabilities>
+Current date and time: ${currentTime}
+
 You can assist with:
 - Analysis and problem-solving across various domains
 - Using available tools and resources to complete tasks

@@ -169,29 +169,29 @@
       "createAccount": "Hesap oluştur"
     },
     "Intro": {
-      "description": "Tercihify'e hoş geldiniz. YÖK Atlas verilerine metin ve sesli sohbet üzerinden erişmek için giriş yapın."
+      "description": "Tercihify'e hoş geldiniz. YÖK Atlas ile yazılı veya sesli sohbet etmek için giriş yapın."
     }
   },
   "Chat": {
     "Error": "Sohbet Hatası",
     "thisMessageWasNotSavedPleaseTryTheChatAgain": "Bu mesaj kaydedilmedi. Lütfen sohbeti tekrar deneyin.",
     "Greeting": {
-      "goodMorning": "Günaydın, {name}! YÖK Atlas hakkında ne öğrenmek istiyorsunuz?",
-      "goodAfternoon": "Tünaydın, {name}! Üniversite tercihleriniz için nasıl yardımcı olabilirim?",
-      "goodEvening": "İyi akşamlar, {name}! YÖK Atlas verilerinde hangi bilgileri arıyorsunuz?",
-      "niceToSeeYouAgain": "Tekrar hoş geldiniz, {name}! YÖK Atlas'ta hangi bölümleri incelemek istiyorsunuz?",
-      "whatAreYouWorkingOnToday": "Bugün hangi üniversite veya bölüm hakkında bilgi almak istiyorsunuz, {name}?",
-      "letMeKnowWhenYoureReadyToBegin": "YÖK Atlas verilerini keşfetmeye hazır olduğunuzda bana bildirin!",
-      "whatAreYourThoughtsToday": "Hangi eğitim alanı veya üniversite hakkında merak ettikleriniz var?",
-      "whereWouldYouLikeToStart": "YÖK Atlas'ta nereden başlamak istersiniz? Üniversiteler mi, bölümler mi?",
-      "whatAreYouThinking": "YÖK Atlas hakkında ne düşünüyorsunuz, {name}? Nasıl yardımcı olabilirim?"
+      "goodMorning": "Günaydın {name}! YÖK Atlas'la ne konuşmak istersin?",
+      "goodAfternoon": "Tünaydın {name}! Tercih zamanı?",
+      "goodEvening": "İyi akşamlar {name}! YÖK Atlas'ta ne var?",
+      "niceToSeeYouAgain": "Tekrar hoş geldin {name}! YÖK Atlas'la konuşalım mı?",
+      "whatAreYouWorkingOnToday": "Hangi üniversiteyi araştırıyoruz {name}?",
+      "letMeKnowWhenYoureReadyToBegin": "YÖK Atlas'ı keşfedelim!",
+      "whatAreYourThoughtsToday": "Hangi üniversiteyi veya bölümü keşfetmek istersin?",
+      "whereWouldYouLikeToStart": "YÖK Atlas'ta hangi konudan başlamak istersin?",
+      "whatAreYouThinking": "YÖK Atlas hakkında ne düşünüyorsun {name}?"
     },
     "TemporaryChat": {
       "toggleTemporaryChat": "Geçici Sohbeti Değiştir",
       "temporaryChat": "Geçici Sohbet",
       "resetChat": "Sohbeti Sıfırla",
       "thisChatWontBeSaved": "Bu sohbet kaydedilmeyecek.",
-      "feelFreeToAskAnythingTemporarily": "YÖK Atlas hakkında merak ettiklerinizi metin veya sesle sorun",
+      "feelFreeToAskAnythingTemporarily": "YÖK Atlas hakkında merak ettiklerinizi sorun",
       "temporaryChatInstructions": "Geçici Sohbet Talimatları",
       "temporaryChatInstructionsPlaceholder": "Talimatlarınızı buraya girin",
       "temporaryChatInstructionsDescription": "Geçici sohbet için talimatlar ayarlayabilirsiniz. Bu, geçici sohbet için bir sistem istemi olarak kullanılacaktır."

@@ -19,7 +19,7 @@ const _ollama = createOllama({
 // Configure OpenAI with organization ID if provided
 const _openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  organization: process.env.OPENAI_API_KEY,
+  ...(process.env.OPENAI_ORG_ID && { organization: process.env.OPENAI_ORG_ID }),
 });
 
 const staticModels = {

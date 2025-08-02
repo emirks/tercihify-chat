@@ -63,6 +63,7 @@ const initialState: AppState = {
   allowedMcpServers: undefined,
   allowedAppDefaultToolkit: [AppDefaultToolkit.Visualization],
   toolPresets: [],
+  chatModel: { provider: "anthropic", model: "claude-4-sonnet" },
   openShortcutsPopup: false,
   openChatPreferences: false,
   mcpCustomizationPopup: undefined,
@@ -90,7 +91,7 @@ export const appStore = create<AppState & AppDispatch>()(
     {
       name: "mc-app-store-v2.0.0",
       partialize: (state) => ({
-        chatModel: state.chatModel || initialState.chatModel,
+        chatModel: initialState.chatModel, // Always use Claude Sonnet as default
         toolChoice: state.toolChoice || initialState.toolChoice,
         allowedMcpServers:
           state.allowedMcpServers || initialState.allowedMcpServers,

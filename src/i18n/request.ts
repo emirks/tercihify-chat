@@ -9,7 +9,7 @@ export default getRequestConfig(async () => {
   const locale = await getLocaleAction();
 
   if (!defaultMessages) {
-    defaultMessages = (await import(`../../messages/en.json`)).default;
+    defaultMessages = (await import(`../../messages/tr.json`)).default;
   }
 
   const messages = await safe(() => import(`../../messages/${locale}.json`))
@@ -19,7 +19,7 @@ export default getRequestConfig(async () => {
   return {
     locale,
     messages:
-      locale === "en" ? defaultMessages : deepmerge(defaultMessages, messages),
+      locale === "tr" ? defaultMessages : deepmerge(defaultMessages, messages),
     getMessageFallback({ key, namespace }) {
       return `${namespace}.${key}`;
     },

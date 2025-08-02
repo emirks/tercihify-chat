@@ -28,6 +28,11 @@ const _anthropic = createAnthropic({
 });
 
 const staticModels = {
+  anthropic: {
+    "claude-4-sonnet": _anthropic("claude-4-sonnet-20250514"),
+    "claude-4-opus": _anthropic("claude-4-opus-20250514"),
+    "claude-3-7-sonnet": _anthropic("claude-3-7-sonnet-latest"),
+  },
   google: {
     "gemini-2.5-pro": google("gemini-2.5-pro"),
     "gemini-2.5-flash": google("gemini-2.5-flash", {}),
@@ -36,11 +41,6 @@ const staticModels = {
     "gpt-4o": _openai("gpt-4o"),
     "gpt-4.1": _openai("gpt-4.1"),
     "gpt-4.1-mini": _openai("gpt-4.1-mini"),
-  },
-  anthropic: {
-    "claude-4-sonnet": _anthropic("claude-4-sonnet-20250514"),
-    "claude-4-opus": _anthropic("claude-4-opus-20250514"),
-    "claude-3-7-sonnet": _anthropic("claude-3-7-sonnet-latest"),
   },
   xai: {
     "grok-3": xai("grok-3-latest"),

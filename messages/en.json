@@ -169,34 +169,34 @@
       "createAccount": "Create account"
     },
     "Intro": {
-      "description": "Welcome to better-chatbot. Sign in to experience our AI-powered conversational tools."
+      "description": "Welcome to Tercihify. Sign in to access YÖK Atlas data through text and voice chat."
     }
   },
   "Chat": {
     "Error": "Chat Error",
     "thisMessageWasNotSavedPleaseTryTheChatAgain": "This message was not saved. Please try the chat again.",
     "Greeting": {
-      "goodMorning": "Good morning, {name}",
-      "goodAfternoon": "Good afternoon, {name}",
-      "goodEvening": "Good evening, {name}",
-      "niceToSeeYouAgain": "Nice to see you again, {name}",
-      "whatAreYouWorkingOnToday": "What are you working on today? {name}",
-      "letMeKnowWhenYoureReadyToBegin": "Let me know when you're ready to begin.",
-      "whatAreYourThoughtsToday": "What are your thoughts today?",
-      "whereWouldYouLikeToStart": "Where would you like to start?",
-      "whatAreYouThinking": "What are you thinking? {name}"
+      "goodMorning": "Good morning, {name}! What would you like to learn about YÖK Atlas?",
+      "goodAfternoon": "Good afternoon, {name}! How can I help you with your university choices?",
+      "goodEvening": "Good evening, {name}! What information are you looking for in YÖK Atlas data?",
+      "niceToSeeYouAgain": "Welcome back, {name}! Which departments would you like to explore in YÖK Atlas?",
+      "whatAreYouWorkingOnToday": "Which university or department would you like to learn about today, {name}?",
+      "letMeKnowWhenYoureReadyToBegin": "Let me know when you're ready to explore YÖK Atlas data!",
+      "whatAreYourThoughtsToday": "What educational field or university are you curious about?",
+      "whereWouldYouLikeToStart": "Where would you like to start in YÖK Atlas? Universities or departments?",
+      "whatAreYouThinking": "What are you thinking about YÖK Atlas, {name}? How can I help?"
     },
     "TemporaryChat": {
       "toggleTemporaryChat": "Toggle Temporary Chat",
       "temporaryChat": "Temporary Chat",
       "resetChat": "Reset Chat",
       "thisChatWontBeSaved": "This chat won't be saved.",
-      "feelFreeToAskAnythingTemporarily": "Feel free to ask anything temporarily",
+      "feelFreeToAskAnythingTemporarily": "Ask anything about YÖK Atlas through text or voice",
       "temporaryChatInstructions": "Temporary Chat Instructions",
       "temporaryChatInstructionsPlaceholder": "Enter your instructions here",
       "temporaryChatInstructionsDescription": "You can set instructions for the temporary chat. This will be used as a system prompt for the temporary chat."
     },
-    "placeholder": "Ask anything or @mention",
+    "placeholder": "Ask questions about YÖK Atlas (text or voice) - universities, departments, scores...",
     "Tool": {
       "webSearching": "Searching the Web...",
       "searchedTheWeb": "Searched the Web",

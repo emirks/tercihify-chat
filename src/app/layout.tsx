@@ -20,15 +20,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Tercihify - Akıllı Tercih Asistanı",
   description:
-    "Tercihify, akıllı tercih asistanıdır. Tercihify, tercih sürecinizi kolaylaştırır ve tercihlerinizi yönetir.",
+    "Tercihify ile YÖK Atlas verilerine metin ve sesli sohbet üzerinden kolayca erişin. Üniversite tercihleri, bölümler ve eğitim bilgileri hakkında sorularınızı sorun.",
   keywords: [
-    "tercih asistanı",
-    "akıllı tercih",
-    "karar verme",
-    "tercih yönetimi",
+    "yök atlas",
+    "üniversite tercih",
+    "sohbet bot",
+    "sesli sohbet",
+    "eğitim danışmanlığı",
     "yapay zeka",
-    "chat bot",
-    "tercih analizi",
+    "üniversite rehberi",
+    "tercih asistanı",
   ],
   authors: [{ name: "Tercihify Team" }],
   creator: "@emirkisa",
@@ -48,24 +49,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     url: "https://tercihify.com", // Replace with your actual domain
-    title: "Tercihify - Akıllı Tercih Asistanı",
+    title: "Tercihify - YÖK Atlas ile Sohbet Et",
     description:
-      "Tercihify, akıllı tercih asistanıdır. Tercihify, tercih sürecinizi kolaylaştırır ve tercihlerinizi yönetir.",
+      "Tercihify ile YÖK Atlas verilerine metin ve sesli sohbet üzerinden kolayca erişin. Üniversite tercihleri, bölümler ve eğitim bilgileri hakkında sorularınızı sorun.",
     siteName: "Tercihify",
     images: [
       {
         url: "/og-image.png", // You'll need to add this image
         width: 1200,
         height: 630,
-        alt: "Tercihify - Akıllı Tercih Asistanı",
+        alt: "Tercihify - YÖK Atlas ile Sohbet Et",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tercihify - Akıllı Tercih Asistanı",
+    title: "Tercihify - YÖK Atlas ile Sohbet Et",
     description:
-      "Tercihify, akıllı tercih asistanıdır. Tercihify, tercih sürecinizi kolaylaştırır ve tercihlerinizi yönetir.",
+      "Tercihify ile YÖK Atlas verilerine metin ve sesli sohbet üzerinden kolayca erişin. Üniversite tercihleri, bölümler ve eğitim bilgileri hakkında sorularınızı sorun.",
     images: ["/og-image.png"], // Same image as OpenGraph
     creator: "@tercihify", // Replace with your actual Twitter handle
   },

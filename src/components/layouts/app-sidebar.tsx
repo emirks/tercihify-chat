@@ -72,7 +72,12 @@ export function AppSidebar({
                   router.refresh();
                 }}
               >
-                <h4 className="font-bold">Tercihify</h4>
+                <div className="flex flex-col">
+                  <h4 className="font-bold">Tercihify</h4>
+                  <span className="text-xs text-muted-foreground">
+                    YÖK Atlas ile Sohbet
+                  </span>
+                </div>
                 <div
                   className="ml-auto block sm:hidden"
                   onClick={(e) => {

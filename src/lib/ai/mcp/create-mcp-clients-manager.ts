@@ -11,6 +11,7 @@ import { McpServerSchema } from "lib/db/pg/schema.pg";
 import { createMCPToolId } from "./mcp-tool-id";
 import logger from "logger";
 import { ToolExecutionOptions } from "ai";
+import { chatUsageLogger } from "../../logging/chat-usage-logger";
 /**
  * Interface for storage of MCP server configurations.
  * Implementations should handle persistent storage of server configs.
@@ -88,10 +89,20 @@ export class MCPClientsManager {
           logger.info(
             "🔧 Adding default yokatlas-mcp server with allowed configuration",
           );
+
+          // Read MCP URL from environment variable with fallback to remote URL
+          const mcpUrl =
+            process.env.YOKATLAS_MCP_URL ||
+            "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr";
+
+          logger.info(
+            `🔧 Using yokatlas-mcp URL: ${mcpUrl.includes("localhost") ? "LOCAL" : "REMOTE"}`,
+          );
+
           await this.persistClient({
             name: "yokatlas-mcp",
             config: {
-              url: "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr",
+              url: mcpUrl,
             },
             // enabled: true,
           });
@@ -233,7 +244,9 @@ export class MCPClientsManager {
     return this.toolCall(client.id, toolName, input);
   }
   async toolCall(id: string, toolName: string, input: unknown) {
-    return safe(() => this.getClient(id))
+    const startTime = Date.now();
+
+    const result = await safe(() => this.getClient(id))
       .map((client) => {
         if (!client) throw new Error(`Client ${id} not found`);
         return client.client;
@@ -269,6 +282,42 @@ export class MCPClientsManager {
         };
       })
       .unwrap();
+
+    // Log MCP tool call result
+    try {
+      const executionTime = Date.now() - startTime;
+      await chatUsageLogger.logToolCallResult({
+        toolName: `mcp_${id}_${toolName}`,
+        result,
+        executionTime,
+        args: input, // Include the input arguments
+      });
+
+      // Also log to console for immediate visibility
+      const resultSize = new Blob([JSON.stringify(result)]).size;
+      const argsSize = new Blob([JSON.stringify(input)]).size;
+      console.log(
+        `MCP Tool Call - ${toolName}: Result ${Math.round(resultSize / 1024)}KB, Args ${Math.round(argsSize / 1024)}KB in ${executionTime}ms`,
+      );
+
+      if (resultSize > 100000) {
+        // Log warning for results over 100KB
+        console.warn(
+          `⚠️  Large MCP result detected: ${toolName} returned ${Math.round(resultSize / 1024)}KB`,
+        );
+      }
+
+      if (argsSize > 10000) {
+        // Log warning for large arguments over 10KB
+        console.warn(
+          `⚠️  Large MCP arguments detected: ${toolName} called with ${Math.round(argsSize / 1024)}KB of arguments`,
+        );
+      }
+    } catch (logError) {
+      console.error("Failed to log MCP tool call:", logError);
+    }
+
+    return result;
   }
 }
 

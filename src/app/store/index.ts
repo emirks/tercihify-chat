@@ -61,7 +61,7 @@ const initialState: AppState = {
   currentThreadId: null,
   toolChoice: "auto",
   allowedMcpServers: undefined,
-  allowedAppDefaultToolkit: [AppDefaultToolkit.Visualization],
+  allowedAppDefaultToolkit: [], // Remove visualization tools to save tokens
   toolPresets: [],
   chatModel: { provider: "anthropic", model: "claude-4-sonnet" },
   openShortcutsPopup: false,

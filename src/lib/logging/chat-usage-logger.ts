@@ -645,6 +645,27 @@ export class ChatUsageLogger {
       return null;
     }
   }
+
+  // Static method to get model usage summary
+  static async getModelUsageSummary(filters: any) {
+    try {
+      return await pgUsageRepository.getModelUsageSummary(filters);
+    } catch (error) {
+      console.error("Failed to get model usage summary:", error);
+      return [];
+    }
+  }
+
+  // Static method to get available model usage
+  static async getAvailableModelUsage() {
+    try {
+      const modelUsage = await pgUsageRepository.getAvailableModelUsage();
+      return modelUsage;
+    } catch (error) {
+      console.error("Failed to get available model usage:", error);
+      return [];
+    }
+  }
 }
 
 export const chatUsageLogger = new ChatUsageLogger();

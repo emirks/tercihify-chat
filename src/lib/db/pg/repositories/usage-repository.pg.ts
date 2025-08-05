@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { pgDb as db } from "../db.pg";
 import {
   ChatUsageLogSchema,
@@ -294,6 +294,120 @@ export const pgUsageRepository = {
       .limit(limit);
 
     return sessions;
+  },
+
+  async getModelUsageSummary(filters: UsageAnalyticsFilters) {
+    let whereCondition: any = undefined;
+
+    const now = new Date();
+
+    if (filters.timeRange.lastMinute) {
+      const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
+      whereCondition = gte(ChatUsageLogSchema.timestamp, oneMinuteAgo);
+    } else if (filters.timeRange.lastHour) {
+      const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+      whereCondition = gte(ChatUsageLogSchema.timestamp, oneHourAgo);
+    } else if (filters.timeRange.lastDay) {
+      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      whereCondition = gte(ChatUsageLogSchema.timestamp, oneDayAgo);
+    } else if (filters.timeRange.lastWeek) {
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      whereCondition = gte(ChatUsageLogSchema.timestamp, oneWeekAgo);
+    } else if (filters.timeRange.lastMonth) {
+      const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      whereCondition = gte(ChatUsageLogSchema.timestamp, oneMonthAgo);
+    } else if (filters.timeRange.custom) {
+      const endDate = new Date(filters.timeRange.custom.end);
+      whereCondition = and(
+        gte(
+          ChatUsageLogSchema.timestamp,
+          new Date(filters.timeRange.custom.start),
+        ),
+        lte(ChatUsageLogSchema.timestamp, endDate),
+      );
+    }
+
+    if (filters.userId) {
+      whereCondition = whereCondition
+        ? and(whereCondition, eq(ChatUsageLogSchema.userId, filters.userId))
+        : eq(ChatUsageLogSchema.userId, filters.userId);
+    }
+
+    if (filters.sessionId) {
+      whereCondition = whereCondition
+        ? and(
+            whereCondition,
+            eq(ChatUsageLogSchema.sessionId, filters.sessionId),
+          )
+        : eq(ChatUsageLogSchema.sessionId, filters.sessionId);
+    }
+
+    const result = await db
+      .select({
+        model: ChatUsageLogSchema.model,
+        totalTokens:
+          sql<number>`SUM(${ChatUsageLogSchema.totalTokens})`.mapWith(Number),
+        promptTokens:
+          sql<number>`SUM(${ChatUsageLogSchema.totalPromptTokens})`.mapWith(
+            Number,
+          ),
+        completionTokens:
+          sql<number>`SUM(${ChatUsageLogSchema.totalCompletionTokens})`.mapWith(
+            Number,
+          ),
+        totalRequests: sql<number>`COUNT(*)`.mapWith(Number),
+        uniqueSessions:
+          sql<number>`COUNT(DISTINCT ${ChatUsageLogSchema.sessionId})`.mapWith(
+            Number,
+          ),
+        averageTokensPerRequest:
+          sql<number>`AVG(${ChatUsageLogSchema.totalTokens})`.mapWith(Number),
+        peakTokenUsage:
+          sql<number>`MAX(${ChatUsageLogSchema.totalTokens})`.mapWith(Number),
+      })
+      .from(ChatUsageLogSchema)
+      .where(whereCondition)
+      .groupBy(ChatUsageLogSchema.model)
+      .orderBy(desc(sql`SUM(${ChatUsageLogSchema.totalTokens})`));
+
+    return result.map((row) => ({
+      model: row.model,
+      totalTokens: Number(row.totalTokens || 0),
+      promptTokens: Number(row.promptTokens || 0),
+      completionTokens: Number(row.completionTokens || 0),
+      totalRequests: Number(row.totalRequests || 0),
+      uniqueSessions: Number(row.uniqueSessions || 0),
+      averageTokensPerRequest: Math.round(
+        Number(row.averageTokensPerRequest || 0),
+      ),
+      peakTokenUsage: Number(row.peakTokenUsage || 0),
+    }));
+  },
+
+  async getAvailableModelUsage() {
+    const modelData = await db
+      .select({
+        model: ChatUsageLogSchema.model,
+        totalTokens:
+          sql<number>`SUM(${ChatUsageLogSchema.totalTokens})`.mapWith(Number),
+        totalRequests: sql<number>`COUNT(*)`.mapWith(Number),
+        uniqueSessions:
+          sql<number>`COUNT(DISTINCT ${ChatUsageLogSchema.sessionId})`.mapWith(
+            Number,
+          ),
+        lastUsed: sql<Date>`MAX(${ChatUsageLogSchema.timestamp})`.mapWith(Date),
+      })
+      .from(ChatUsageLogSchema)
+      .groupBy(ChatUsageLogSchema.model)
+      .orderBy(desc(sql`SUM(${ChatUsageLogSchema.totalTokens})`));
+
+    return modelData.map((row) => ({
+      model: row.model,
+      totalTokens: Number(row.totalTokens || 0),
+      totalRequests: Number(row.totalRequests || 0),
+      uniqueSessions: Number(row.uniqueSessions || 0),
+      lastUsed: row.lastUsed,
+    }));
   },
 
   async getHourlyUsage(hours = 24) {

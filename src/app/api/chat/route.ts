@@ -48,7 +48,7 @@ import { colorize } from "consola/utils";
 import { isVercelAIWorkflowTool } from "app-types/workflow";
 import { SequentialThinkingToolName } from "lib/ai/tools";
 import { sequentialThinkingTool } from "lib/ai/tools/thinking/sequential-thinking";
-import { chatUsageLogger } from "lib/logging/chat-usage-logger";
+import { ChatUsageLogger } from "lib/logging/chat-usage-logger";
 import { conversationSummarizer } from "lib/ai/conversation-summarizer";
 import { conversationLimiter } from "lib/ai/conversation-limiter";
 
@@ -85,6 +85,7 @@ function cleanToolResultsFromMessages(messages: Message[]): Message[] {
 export async function POST(request: Request) {
   const requestStartTime = Date.now();
   let requestSize = 0;
+  const chatUsageLogger = new ChatUsageLogger();
 
   try {
     const requestText = await request.text();

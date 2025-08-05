@@ -31,6 +31,8 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
+  BarChart,
+  Bar,
   Cell,
 } from "recharts";
 import {
@@ -44,42 +46,56 @@ import {
   FileText,
 } from "lucide-react";
 
-interface UsageData {
-  lastMinuteUsage: {
-    totalTokens: number;
-    promptTokens: number;
-    completionTokens: number;
-  };
-  lastHourUsage: {
-    totalTokens: number;
-    promptTokens: number;
-    completionTokens: number;
-  };
-  lastWeekUsage: {
-    totalTokens: number;
-    promptTokens: number;
-    completionTokens: number;
-  };
-  highUsageSessions: Array<{
-    sessionId: string;
-    userId: string;
-    totalTokens: number;
-    lastActivity: string;
-  }>;
-  hourlyUsage: Array<{
-    hour: string;
-    tokens: number;
-  }>;
-  minuteUsage: Array<{
-    minute: string;
-    tokens: number;
-  }>;
+interface TokenUsageSummary {
+  totalTokens: number;
+  promptTokens: number;
+  completionTokens: number;
+}
+
+interface HighUsageSession {
+  sessionId: string;
+  userId: string;
+  totalTokens: number;
+  lastActivity: string;
+}
+
+interface HourlyUsage {
+  hour: string;
+  tokens: number;
+}
+
+interface MinuteUsage {
+  minute: string;
+  tokens: number;
+  requests: number;
+}
+
+interface ModelUsage {
+  model: string;
+  totalTokens: number;
+  totalRequests: number;
+  uniqueSessions: number;
+  lastUsed: string;
+  promptTokens?: number;
+  completionTokens?: number;
+  averageTokensPerRequest?: number;
+  peakTokenUsage?: number;
+}
+
+interface DashboardData {
+  lastMinuteUsage: TokenUsageSummary;
+  lastHourUsage: TokenUsageSummary;
+  lastWeekUsage: TokenUsageSummary;
+  highUsageSessions: HighUsageSession[];
+  hourlyUsage: HourlyUsage[];
+  minuteUsage: MinuteUsage[];
+  modelUsage: ModelUsage[];
 }
 
 const _COLORS = ["#3b82f6", "#8b5cf6", "#10b981"];
 
 export default function UsageAnalyticsPage() {
-  const [data, setData] = useState<UsageData | null>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [_lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -452,6 +468,109 @@ export default function UsageAnalyticsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Model Usage */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Model Usage</CardTitle>
+          <CardDescription>Token usage by AI model</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {data.modelUsage && data.modelUsage.length > 0 ? (
+            <div className="space-y-4">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={data.modelUsage}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis
+                    dataKey="model"
+                    stroke="#6b7280"
+                    fontSize={12}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis
+                    tickFormatter={(value) => value.toLocaleString()}
+                    stroke="#6b7280"
+                    fontSize={12}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1f2937",
+                      border: "1px solid #374151",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    }}
+                    labelStyle={{
+                      color: "#f9fafb",
+                      fontWeight: "bold",
+                      marginBottom: "4px",
+                    }}
+                    itemStyle={{
+                      color: "#d1d5db",
+                    }}
+                    formatter={(value, name) => [
+                      value.toLocaleString(),
+                      name === "totalTokens" ? "Total Tokens" : name,
+                    ]}
+                  />
+                  <Bar
+                    dataKey="totalTokens"
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Model</TableHead>
+                    <TableHead>Total Tokens</TableHead>
+                    <TableHead>Requests</TableHead>
+                    <TableHead>Sessions</TableHead>
+                    <TableHead>Avg/Request</TableHead>
+                    <TableHead>Peak</TableHead>
+                    <TableHead>Last Used</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.modelUsage.map((model) => (
+                    <TableRow key={model.model}>
+                      <TableCell className="font-medium">
+                        {model.model}
+                      </TableCell>
+                      <TableCell>
+                        {model.totalTokens.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {model.totalRequests.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {model.uniqueSessions.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {model.averageTokensPerRequest?.toLocaleString() ||
+                          "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {model.peakTokenUsage?.toLocaleString() || "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(model.lastUsed).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+              No model usage data available yet.
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* High Usage Sessions */}
       <Card>

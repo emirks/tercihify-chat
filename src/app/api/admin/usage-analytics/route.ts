@@ -22,22 +22,21 @@ export async function GET(request: NextRequest) {
         highUsageSessions,
         hourlyUsage,
         minuteUsage,
+        modelUsage,
       ] = await Promise.all([
         ChatUsageLogger.getTokenUsageSummary({
           timeRange: { lastMinute: true },
-          userId: session.user.id,
         }),
         ChatUsageLogger.getTokenUsageSummary({
           timeRange: { lastHour: true },
-          userId: session.user.id,
         }),
         ChatUsageLogger.getTokenUsageSummary({
           timeRange: { lastWeek: true },
-          userId: session.user.id,
         }),
         ChatUsageLogger.getHighUsageSessions(20),
         ChatUsageLogger.getAvailableHourlyData(),
         ChatUsageLogger.getAvailableMinuteData(),
+        ChatUsageLogger.getAvailableModelUsage(),
       ]);
 
       return Response.json({
@@ -49,6 +48,7 @@ export async function GET(request: NextRequest) {
           highUsageSessions,
           hourlyUsage,
           minuteUsage,
+          modelUsage,
         },
       });
     }
@@ -85,7 +85,6 @@ export async function GET(request: NextRequest) {
             timeRange: {
               [timeRange]: true,
             },
-            userId: session.user.id,
           };
           const tokenUsage =
             await ChatUsageLogger.getTokenUsageSummary(filters);

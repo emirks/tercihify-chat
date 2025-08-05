@@ -64,6 +64,13 @@
       "when": 1753711175572,
       "tag": "0008_deep_miracleman",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1753871488620,
+      "tag": "0009_wise_tiger",
+      "breakpoints": true
     }
   ]
 }

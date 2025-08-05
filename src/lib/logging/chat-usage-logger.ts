@@ -1,6 +1,5 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { format } from "date-fns";
+import { pgUsageRepository } from "@/lib/db/pg/repositories/usage-repository.pg";
 
 export interface ChatUsageStep {
   stepName: string;
@@ -87,56 +86,14 @@ export interface ChatUsageLog {
 }
 
 export class ChatUsageLogger {
-  private logsDir: string;
   private currentLog: ChatUsageLog | null = null;
-  private captureContent: boolean;
-  private sessionMapping: Map<string, string> = new Map(); // sessionId -> folderName mapping
-  private sessionCounter: number = 0;
+  private captureContent: boolean = true;
+  private persistToFile: boolean = true; // Keep file persistence for compatibility
+  private logsDir: string = "logs/chat-usage";
 
-  constructor(basePath = "logs/chat-usage", captureContent = true) {
-    this.logsDir = basePath;
+  constructor(captureContent = true, persistToFile = true) {
     this.captureContent = captureContent;
-    this.loadSessionMapping();
-  }
-
-  private async loadSessionMapping(): Promise<void> {
-    try {
-      const mappingPath = path.join(this.logsDir, "session_mapping.json");
-      const mappingData = await fs.readFile(mappingPath, "utf-8");
-      const data = JSON.parse(mappingData);
-      this.sessionMapping = new Map(Object.entries(data.mapping || {}));
-      this.sessionCounter = data.counter || 0;
-    } catch {
-      // File doesn't exist yet, start fresh
-      this.sessionMapping = new Map();
-      this.sessionCounter = 0;
-    }
-  }
-
-  private async saveSessionMapping(): Promise<void> {
-    try {
-      await fs.mkdir(this.logsDir, { recursive: true });
-      const mappingPath = path.join(this.logsDir, "session_mapping.json");
-      const data = {
-        counter: this.sessionCounter,
-        mapping: Object.fromEntries(this.sessionMapping),
-        lastUpdated: new Date().toISOString(),
-      };
-      await fs.writeFile(mappingPath, JSON.stringify(data, null, 2));
-    } catch (error) {
-      console.error("Failed to save session mapping:", error);
-    }
-  }
-
-  private getSessionFolderName(sessionId: string): string {
-    if (!this.sessionMapping.has(sessionId)) {
-      this.sessionCounter++;
-      const folderName = `session_${this.sessionCounter.toString().padStart(3, "0")}`;
-      this.sessionMapping.set(sessionId, folderName);
-      // Save mapping asynchronously
-      this.saveSessionMapping().catch(console.error);
-    }
-    return this.sessionMapping.get(sessionId)!;
+    this.persistToFile = persistToFile;
   }
 
   async initializeLog(params: {
@@ -480,7 +437,35 @@ export class ChatUsageLogger {
     this.currentLog.responseSize = responseSize || 0;
     this.currentLog.totalExecutionTime = Date.now() - this.currentLog.timestamp;
 
-    await this.saveLog();
+    // Save to database
+    try {
+      await pgUsageRepository.createUsageLogWithSteps(
+        {
+          sessionId: this.currentLog.sessionId,
+          messageId: this.currentLog.messageId,
+          timestamp: this.currentLog.timestamp,
+          userId: this.currentLog.userId,
+          model: this.currentLog.model,
+          totalPromptTokens: this.currentLog.totalPromptTokens,
+          totalCompletionTokens: this.currentLog.totalCompletionTokens,
+          totalTokens: this.currentLog.totalTokens,
+          totalExecutionTime: this.currentLog.totalExecutionTime,
+          requestSize: this.currentLog.requestSize,
+          responseSize: this.currentLog.responseSize,
+          fullConversationContext: this.currentLog.fullConversationContext,
+        },
+        this.currentLog.steps,
+      );
+
+      console.log("Chat usage log saved to database");
+    } catch (error) {
+      console.error("Failed to save chat usage log to database:", error);
+      // Fallback to file persistence if enabled
+      if (this.persistToFile) {
+        await this.saveLog();
+      }
+    }
+
     this.currentLog = null;
   }
 
@@ -488,11 +473,12 @@ export class ChatUsageLogger {
     if (!this.currentLog) return;
 
     try {
+      // Import file system modules only when needed (since this is fallback)
+      const fs = await import("fs/promises");
+      const path = await import("path");
+
       // Create directory structure: logs/chat-usage/{sessionId}/
-      const sessionDir = path.join(
-        this.logsDir,
-        this.getSessionFolderName(this.currentLog.sessionId),
-      );
+      const sessionDir = path.join(this.logsDir);
       await fs.mkdir(sessionDir, { recursive: true });
 
       // File name: YYYY-MM-DD_HH-mm-ss_{messageId-first8chars}.json
@@ -506,19 +492,12 @@ export class ChatUsageLogger {
 
       // Save detailed log
       await fs.writeFile(filePath, JSON.stringify(this.currentLog, null, 2));
-
-      // Also create/update session summary
-      await this.updateSessionSummary();
-
-      console.log(`Chat usage log saved: ${filePath}`);
+      console.log(`Chat usage log saved to file: ${filePath}`);
 
       // Log key metrics to console for immediate visibility
       if (this.currentLog.fullConversationContext) {
         const ctx = this.currentLog.fullConversationContext;
         const modelInfo = this.currentLog.model;
-        const sessionFolder = this.getSessionFolderName(
-          this.currentLog.sessionId,
-        );
 
         // Check if summarization occurred
         const summarizationStep = this.currentLog.steps.find(
@@ -527,7 +506,7 @@ export class ChatUsageLogger {
 
         if (ctx) {
           console.log(
-            `📊 Token Analysis - ${sessionFolder} | Model: ${modelInfo}`,
+            `📊 Token Analysis - ${this.currentLog.sessionId} | Model: ${modelInfo}`,
           );
           console.log(
             `   System Prompt: ${ctx.tokensBreakdown.systemPromptActual} tokens`,
@@ -578,76 +557,7 @@ export class ChatUsageLogger {
         }
       }
     } catch (error) {
-      console.error("Failed to save chat usage log:", error);
-    }
-  }
-
-  private async updateSessionSummary(): Promise<void> {
-    if (!this.currentLog) return;
-
-    try {
-      const sessionDir = path.join(
-        this.logsDir,
-        this.getSessionFolderName(this.currentLog.sessionId),
-      );
-      const summaryPath = path.join(sessionDir, "session_summary.json");
-
-      let summary: any = {
-        sessionId: this.currentLog.sessionId,
-        totalMessages: 0,
-        totalTokens: 0,
-        totalPromptTokens: 0,
-        totalCompletionTokens: 0,
-        averageTokensPerMessage: 0,
-        peakTokenUsage: 0,
-        mostUsedTools: {},
-        messages: [],
-      };
-
-      // Try to read existing summary
-      try {
-        const existingData = await fs.readFile(summaryPath, "utf-8");
-        summary = JSON.parse(existingData);
-      } catch {
-        // File doesn't exist yet, use default summary
-      }
-
-      // Update summary with current log
-      summary.totalMessages += 1;
-      summary.totalTokens += this.currentLog.totalTokens;
-      summary.totalPromptTokens += this.currentLog.totalPromptTokens;
-      summary.totalCompletionTokens += this.currentLog.totalCompletionTokens;
-      summary.averageTokensPerMessage =
-        summary.totalTokens / summary.totalMessages;
-      summary.peakTokenUsage = Math.max(
-        summary.peakTokenUsage,
-        this.currentLog.totalTokens,
-      );
-
-      // Track tool usage
-      for (const step of this.currentLog.steps) {
-        if (step.toolCallResults) {
-          for (const toolCall of step.toolCallResults) {
-            summary.mostUsedTools[toolCall.toolName] =
-              (summary.mostUsedTools[toolCall.toolName] || 0) + 1;
-          }
-        }
-      }
-
-      // Add message summary
-      summary.messages.push({
-        messageId: this.currentLog.messageId,
-        timestamp: this.currentLog.timestamp,
-        totalTokens: this.currentLog.totalTokens,
-        promptTokens: this.currentLog.totalPromptTokens,
-        completionTokens: this.currentLog.totalCompletionTokens,
-        executionTime: this.currentLog.totalExecutionTime,
-        stepCount: this.currentLog.steps.length,
-      });
-
-      await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2));
-    } catch (error) {
-      console.error("Failed to update session summary:", error);
+      console.error("Failed to save chat usage log to file:", error);
     }
   }
 
@@ -659,94 +569,80 @@ export class ChatUsageLogger {
     return new Blob([JSON.stringify(obj)]).size;
   }
 
-  // Static method to get usage analytics for a session
-  static async getSessionAnalytics(
-    sessionId: string,
-    basePath = "logs/chat-usage",
-  ): Promise<any> {
+  // Static method to get usage analytics for a session from database
+  static async getSessionAnalytics(sessionId: string) {
     try {
-      // Load session mapping to find the correct folder
-      const mappingPath = path.join(basePath, "session_mapping.json");
-      let folderName = sessionId; // fallback to direct sessionId if mapping not found
-
-      try {
-        const mappingData = await fs.readFile(mappingPath, "utf-8");
-        const data = JSON.parse(mappingData);
-        const mapping = new Map(
-          Object.entries((data.mapping as Record<string, string>) || {}),
-        );
-        folderName = mapping.get(sessionId) || sessionId;
-      } catch {
-        // Mapping file doesn't exist, try direct sessionId
-      }
-
-      const sessionDir = path.join(basePath, folderName);
-      const summaryPath = path.join(sessionDir, "session_summary.json");
-
-      const summaryData = await fs.readFile(summaryPath, "utf-8");
-      return JSON.parse(summaryData);
+      const usageData = await pgUsageRepository.getSessionUsage(sessionId);
+      return usageData;
     } catch (error) {
       console.error("Failed to get session analytics:", error);
       return null;
     }
   }
 
-  // Static method to get recent high-usage sessions
-  static async getHighUsageSessions(
-    basePath = "logs/chat-usage",
-    limit = 10,
-  ): Promise<any[]> {
+  // Static method to get recent high-usage sessions from database
+  static async getHighUsageSessions(limit = 10) {
     try {
-      const logsDir = basePath;
-      const items = await fs.readdir(logsDir);
-
-      // Filter to only include session folders (session_001, session_002, etc.)
-      const sessionFolders = items.filter(
-        (item) => item.startsWith("session_") && /^session_\d{3}$/.test(item),
-      );
-
-      const sessionSummaries = await Promise.all(
-        sessionFolders.map(async (folderName) => {
-          try {
-            const summaryPath = path.join(
-              logsDir,
-              folderName,
-              "session_summary.json",
-            );
-            const summaryData = await fs.readFile(summaryPath, "utf-8");
-            const summary = JSON.parse(summaryData);
-            // Add folder name for reference
-            summary.folderName = folderName;
-            return summary;
-          } catch {
-            return null;
-          }
-        }),
-      );
-
-      return sessionSummaries
-        .filter(Boolean)
-        .sort((a, b) => b.peakTokenUsage - a.peakTokenUsage)
-        .slice(0, limit);
+      const highUsageSessions =
+        await pgUsageRepository.getHighUsageSessions(limit);
+      return highUsageSessions;
     } catch (error) {
       console.error("Failed to get high usage sessions:", error);
       return [];
     }
   }
 
-  // New method to get session mapping for reference
-  static async getSessionMapping(
-    basePath = "logs/chat-usage",
-  ): Promise<Map<string, string>> {
+  // Static method to get hourly usage data from database
+  static async getHourlyUsage(hours = 24) {
     try {
-      const mappingPath = path.join(basePath, "session_mapping.json");
-      const mappingData = await fs.readFile(mappingPath, "utf-8");
-      const data = JSON.parse(mappingData);
-      return new Map(
-        Object.entries((data.mapping as Record<string, string>) || {}),
-      );
-    } catch {
-      return new Map();
+      const hourlyUsage = await pgUsageRepository.getHourlyUsage(hours);
+      return hourlyUsage;
+    } catch (error) {
+      console.error("Failed to get hourly usage:", error);
+      return [];
+    }
+  }
+
+  // Static method to get available hourly data (shows actual data instead of empty)
+  static async getAvailableHourlyData() {
+    try {
+      const hourlyUsage = await pgUsageRepository.getAvailableHourlyData();
+      return hourlyUsage;
+    } catch (error) {
+      console.error("Failed to get available hourly data:", error);
+      return [];
+    }
+  }
+
+  // Static method to get per-minute usage for last hour
+  static async getMinuteUsage(minutes = 60) {
+    try {
+      const minuteUsage = await pgUsageRepository.getMinuteUsage(minutes);
+      return minuteUsage;
+    } catch (error) {
+      console.error("Failed to get minute usage:", error);
+      return [];
+    }
+  }
+
+  // Static method to get available per-minute data (shows actual data instead of empty)
+  static async getAvailableMinuteData() {
+    try {
+      const minuteUsage = await pgUsageRepository.getAvailableMinuteData();
+      return minuteUsage;
+    } catch (error) {
+      console.error("Failed to get available minute data:", error);
+      return [];
+    }
+  }
+
+  // Static method to get token usage summary with filters
+  static async getTokenUsageSummary(filters: any) {
+    try {
+      return await pgUsageRepository.getTokenUsageSummary(filters);
+    } catch (error) {
+      console.error("Failed to get token usage summary:", error);
+      return null;
     }
   }
 }

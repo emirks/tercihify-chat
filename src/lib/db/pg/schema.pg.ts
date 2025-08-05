@@ -13,6 +13,7 @@ import {
   unique,
   varchar,
   index,
+  integer,
 } from "drizzle-orm/pg-core";
 import { DBWorkflow, DBEdge, DBNode } from "app-types/workflow";
 
@@ -260,3 +261,79 @@ export type McpServerCustomizationEntity =
 
 export type ArchiveEntity = typeof ArchiveSchema.$inferSelect;
 export type ArchiveItemEntity = typeof ArchiveItemSchema.$inferSelect;
+
+// Usage analytics tables
+export const ChatUsageLogSchema = pgTable(
+  "chat_usage_log",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    sessionId: text("session_id").notNull(),
+    messageId: text("message_id").notNull(),
+    timestamp: timestamp("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => UserSchema.id, { onDelete: "cascade" }),
+    model: text("model").notNull(),
+    totalPromptTokens: integer("total_prompt_tokens").notNull().default(0),
+    totalCompletionTokens: integer("total_completion_tokens")
+      .notNull()
+      .default(0),
+    totalTokens: integer("total_tokens").notNull().default(0),
+    totalExecutionTime: integer("total_execution_time").notNull().default(0),
+    requestSize: integer("request_size").notNull().default(0),
+    responseSize: integer("response_size").notNull().default(0),
+    fullConversationContext: json("full_conversation_context"),
+  },
+  (table) => [
+    index("chat_usage_log_session_idx").on(table.sessionId),
+    index("chat_usage_log_timestamp_idx").on(table.timestamp),
+    index("chat_usage_log_user_idx").on(table.userId),
+  ],
+);
+
+export const ChatUsageStepSchema = pgTable(
+  "chat_usage_step",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    logId: uuid("log_id")
+      .notNull()
+      .references(() => ChatUsageLogSchema.id, { onDelete: "cascade" }),
+    stepName: text("step_name").notNull(),
+    timestamp: timestamp("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
+    promptTokens: integer("prompt_tokens"),
+    completionTokens: integer("completion_tokens"),
+    totalTokens: integer("total_tokens"),
+    systemPromptSize: integer("system_prompt_size"),
+    messagesCount: integer("messages_count"),
+    toolsCount: integer("tools_count"),
+    mcpToolsCount: integer("mcp_tools_count"),
+    workflowToolsCount: integer("workflow_tools_count"),
+    appDefaultToolsCount: integer("app_default_tools_count"),
+    toolCallResults: json("tool_call_results"),
+    promptSizeBreakdown: json("prompt_size_breakdown"),
+    actualContent: json("actual_content"),
+    additionalData: json("additional_data"),
+  },
+  (table) => [
+    index("chat_usage_step_log_idx").on(table.logId),
+    index("chat_usage_step_timestamp_idx").on(table.timestamp),
+  ],
+);
+
+export const DailyUsageStatsSchema = pgTable(
+  "daily_usage_stats",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    date: timestamp("date").notNull().unique(),
+    totalTokens: integer("total_tokens").notNull().default(0),
+    totalRequests: integer("total_requests").notNull().default(0),
+    uniqueSessions: integer("unique_sessions").notNull().default(0),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("daily_usage_stats_date_idx").on(table.date)],
+);

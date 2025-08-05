@@ -55,7 +55,8 @@ const staticModels = {
     "qwen3-235b-a22b-2507": openrouter("qwen/qwen3-235b-a22b-2507"),
     "qwen/qwen3-coder": openrouter("qwen/qwen3-coder"),
     "openai/gpt-4.1": openrouter("openai/gpt-4.1"),
-    "google/gemini-2.5-flash-lite": openrouter("google/gemini-2.5-flash-lite"),
+    "openai/gpt-oss-120b": openrouter("openai/gpt-oss-120b"),
+    "openrouter/horizon-beta": openrouter("openrouter/horizon-beta"),
   },
 };
 

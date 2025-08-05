@@ -177,7 +177,7 @@ export const pgUsageRepository = {
   async getTokenUsageSummary(
     filters: UsageAnalyticsFilters,
   ): Promise<TokenUsageSummary> {
-    let whereCondition = undefined;
+    let whereCondition: any = undefined;
 
     const now = new Date();
 
@@ -198,9 +198,10 @@ export const pgUsageRepository = {
       whereCondition = gte(ChatUsageLogSchema.timestamp, oneMonthAgo);
     } else if (filters.timeRange.custom) {
       const startDate = new Date(filters.timeRange.custom.start);
+      const endDate = new Date(filters.timeRange.custom.end);
       whereCondition = and(
         gte(ChatUsageLogSchema.timestamp, startDate),
-        sql`${ChatUsageLogSchema.timestamp} <= ${new Date(filters.timeRange.custom.end)}`,
+        sql`${ChatUsageLogSchema.timestamp} <= ${endDate}`,
       );
     }
 

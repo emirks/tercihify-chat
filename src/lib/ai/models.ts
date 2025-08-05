@@ -28,36 +28,43 @@ const _anthropic = createAnthropic({
 });
 
 const staticModels = {
-  anthropic: {
-    "claude-4-sonnet": _anthropic("claude-4-sonnet-20250514"),
-    "claude-4-opus": _anthropic("claude-4-opus-20250514"),
-    "claude-3-7-sonnet": _anthropic("claude-3-7-sonnet-latest"),
+  openRouter: {
+    // "qwen3-235b-a22b-2507": openrouter("qwen/qwen3-235b-a22b-2507"),
+    // "qwen/qwen3-coder": openrouter("qwen/qwen3-coder"),
+    // "openai/gpt-4.1": openrouter("openai/gpt-4.1"),
+    // "openai/gpt-oss-120b": openrouter("openai/gpt-oss-120b"),
+    // "openrouter/horizon-beta": openrouter("openrouter/horizon-beta"),
+    "openrouter/horizon": openrouter("openrouter/horizon-beta", {
+      models: [
+        "openai/gpt-oss-120b",
+        "deepseek/deepseek-chat-v3-0324:free",
+        "openai/gpt-4.1",
+      ],
+    }),
   },
   google: {
     "gemini-2.5-pro": google("gemini-2.5-pro"),
     "gemini-2.5-flash": google("gemini-2.5-flash", {}),
   },
-  openai: {
-    "gpt-4o": _openai("gpt-4o"),
-    "gpt-4.1": _openai("gpt-4.1"),
-    "gpt-4.1-mini": _openai("gpt-4.1-mini"),
-  },
-  xai: {
-    "grok-3": xai("grok-3-latest"),
-    "grok-3-mini": xai("grok-3-mini-latest"),
-  },
-  ollama: {
-    "gemma3:1b": _ollama("gemma3:1b"),
-    "gemma3:4b": _ollama("gemma3:4b"),
-    "gemma3:12b": _ollama("gemma3:12b"),
-  },
-  openRouter: {
-    "qwen3-235b-a22b-2507": openrouter("qwen/qwen3-235b-a22b-2507"),
-    "qwen/qwen3-coder": openrouter("qwen/qwen3-coder"),
-    "openai/gpt-4.1": openrouter("openai/gpt-4.1"),
-    "openai/gpt-oss-120b": openrouter("openai/gpt-oss-120b"),
-    "openrouter/horizon-beta": openrouter("openrouter/horizon-beta"),
-  },
+  // anthropic: {
+  //   "claude-4-sonnet": _anthropic("claude-4-sonnet-20250514"),
+  //   "claude-4-opus": _anthropic("claude-4-opus-20250514"),
+  //   "claude-3-7-sonnet": _anthropic("claude-3-7-sonnet-latest"),
+  // },
+  // openai: {
+  //   "gpt-4o": _openai("gpt-4o"),
+  //   "gpt-4.1": _openai("gpt-4.1"),
+  //   "gpt-4.1-mini": _openai("gpt-4.1-mini"),
+  // },
+  // xai: {
+  //   "grok-3": xai("grok-3-latest"),
+  //   "grok-3-mini": xai("grok-3-mini-latest"),
+  // },
+  // ollama: {
+  //   "gemma3:1b": _ollama("gemma3:1b"),
+  //   "gemma3:4b": _ollama("gemma3:4b"),
+  //   "gemma3:12b": _ollama("gemma3:12b"),
+  // },
 };
 
 const staticUnsupportedModels = new Set([

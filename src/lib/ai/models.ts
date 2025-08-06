@@ -46,8 +46,8 @@ const staticModels = {
     ),
     "openrouter/horizon": openrouter("openrouter/horizon-beta", {
       models: [
-        "openai/gpt-oss-120b",
         "deepseek/deepseek-chat-v3-0324:free",
+        "openai/gpt-oss-120b",
         "openai/gpt-4.1",
       ],
     }),

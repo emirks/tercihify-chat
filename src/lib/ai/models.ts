@@ -34,6 +34,16 @@ const staticModels = {
     // "openai/gpt-4.1": openrouter("openai/gpt-4.1"),
     // "openai/gpt-oss-120b": openrouter("openai/gpt-oss-120b"),
     // "openrouter/horizon-beta": openrouter("openrouter/horizon-beta"),
+    "deepseek/deepseek-chat-v3-0324": openrouter(
+      "deepseek/deepseek-chat-v3-0324:free",
+      {
+        models: [
+          "openrouter/horizon-beta",
+          "openai/gpt-oss-120b",
+          "openai/gpt-4.1",
+        ],
+      },
+    ),
     "openrouter/horizon": openrouter("openrouter/horizon-beta", {
       models: [
         "openai/gpt-oss-120b",
@@ -42,22 +52,14 @@ const staticModels = {
       ],
     }),
     "openai/gpt-oss-120b": openrouter("openai/gpt-oss-120b"),
-    "deepseek/deepseek-chat-v3-0324:free": openrouter(
-      "deepseek/deepseek-chat-v3-0324:free",
-    ),
-    "anthropic/claude-sonnet-4": openrouter("anthropic/claude-sonnet-4"),
-    "google/gemini-2.5-pro": openrouter("google/gemini-2.5-pro"),
-    "google/gemini-2.5-flash": openrouter("google/gemini-2.5-flash"),
   },
   google: {
-    "gemini-2.5-pro": google("gemini-2.5-pro"),
-    "gemini-2.5-flash": google("gemini-2.5-flash", {}),
+    "gemini-2.5-pro": openrouter("google/gemini-2.5-pro"),
+    "gemini-2.5-flash": openrouter("google/gemini-2.5-flash"),
   },
-  // anthropic: {
-  //   "claude-4-sonnet": _anthropic("claude-4-sonnet-20250514"),
-  //   "claude-4-opus": _anthropic("claude-4-opus-20250514"),
-  //   "claude-3-7-sonnet": _anthropic("claude-3-7-sonnet-latest"),
-  // },
+  anthropic: {
+    "claude-4-sonnet": openrouter("anthropic/claude-sonnet-4"),
+  },
   // openai: {
   //   "gpt-4o": _openai("gpt-4o"),
   //   "gpt-4.1": _openai("gpt-4.1"),

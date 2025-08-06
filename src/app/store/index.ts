@@ -61,9 +61,12 @@ const initialState: AppState = {
   currentThreadId: null,
   toolChoice: "auto",
   allowedMcpServers: undefined,
-  allowedAppDefaultToolkit: [], // Remove visualization tools to save tokens
+  allowedAppDefaultToolkit: [AppDefaultToolkit.WebSearch], // Enable web search by default
   toolPresets: [],
-  chatModel: { provider: "anthropic", model: "claude-4-sonnet" },
+  chatModel: {
+    provider: "openRouter",
+    model: "deepseek/deepseek-chat-v3-0324",
+  },
   openShortcutsPopup: false,
   openChatPreferences: false,
   mcpCustomizationPopup: undefined,
@@ -91,13 +94,11 @@ export const appStore = create<AppState & AppDispatch>()(
     {
       name: "mc-app-store-v2.0.0",
       partialize: (state) => ({
-        chatModel: initialState.chatModel, // Always use Claude Sonnet as default
+        chatModel: initialState.chatModel, // Always use OpenRouter Horizon as default
         toolChoice: state.toolChoice || initialState.toolChoice,
         allowedMcpServers:
           state.allowedMcpServers || initialState.allowedMcpServers,
-        allowedAppDefaultToolkit:
-          state.allowedAppDefaultToolkit ||
-          initialState.allowedAppDefaultToolkit,
+        allowedAppDefaultToolkit: initialState.allowedAppDefaultToolkit,
         temporaryChat: {
           ...initialState.temporaryChat,
           ...state.temporaryChat,

@@ -317,7 +317,7 @@ Give actionable guidance with clear reasoning based on actual tool results
 ## TOOL SELECTION GUIDE
 
 **YokAtlas Tools** → Admission data, demographics, rankings, program comparisons
-**Web Search** → Photos, current fees, procedures, contact info, academic staff, clubs, dormitories, transportations, etc.
+**Web Search** → Photos, current fees, procedures, contact info, academic staff, clubs, dormitories, transportations, any price information, etc.
 **Combined approach** → Use YokAtlas first, then web search for additional details
 
 ## OPERATIONAL RULES

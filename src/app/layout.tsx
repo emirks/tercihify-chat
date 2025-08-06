@@ -21,18 +21,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tercihify - Akıllı Tercih Asistanı",
+  title: "Tercihify - Tercih Yapmanın En Akıllı Hali",
   description:
-    "Tercihify ile YÖK Atlas verilerine metin ve sesli sohbet üzerinden kolayca erişin. Üniversite tercihleri, bölümler ve eğitim bilgileri hakkında sorularınızı sorun.",
+    "YÖK Atlas verisiyle stratejik tercih listeleri hazırlayın. Yapay zeka destekli üniversite karşılaştırması, derin araştırma ve kişiselleştirilmiş tercih optimizasyonu.",
   keywords: [
     "yök atlas",
     "üniversite tercih",
-    "sohbet bot",
-    "sesli sohbet",
-    "eğitim danışmanlığı",
-    "yapay zeka",
+    "stratejik tercih",
+    "tercih listesi",
+    "üniversite karşılaştırma",
+    "yapay zeka tercih",
+    "akıllı tercih",
+    "tercih optimizasyonu",
+    "tercih danışmanlığı",
     "üniversite rehberi",
-    "tercih asistanı",
   ],
   authors: [{ name: "Tercihify Team" }],
   creator: "@emirkisa",
@@ -52,24 +54,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     url: "https://tercihify.com", // Replace with your actual domain
-    title: "Tercihify - YÖK Atlas ile Sohbet Et",
+    title: "Tercihify - Tercih Yapmanın En Akıllı Hali",
     description:
-      "Tercihify ile YÖK Atlas verilerine metin ve sesli sohbet üzerinden kolayca erişin. Üniversite tercihleri, bölümler ve eğitim bilgileri hakkında sorularınızı sorun.",
+      "YÖK Atlas verisiyle stratejik tercih listeleri hazırlayın. Yapay zeka destekli üniversite karşılaştırması, derin araştırma ve kişiselleştirilmiş tercih optimizasyonu.",
     siteName: "Tercihify",
     images: [
       {
         url: "/og-image.png", // You'll need to add this image
         width: 1200,
         height: 630,
-        alt: "Tercihify - YÖK Atlas ile Sohbet Et",
+        alt: "Tercihify - Tercih Yapmanın En Akıllı Hali",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tercihify - YÖK Atlas ile Sohbet Et",
+    title: "Tercihify - Tercih Yapmanın En Akıllı Hali",
     description:
-      "Tercihify ile YÖK Atlas verilerine metin ve sesli sohbet üzerinden kolayca erişin. Üniversite tercihleri, bölümler ve eğitim bilgileri hakkında sorularınızı sorun.",
+      "YÖK Atlas verisiyle stratejik tercih listeleri hazırlayın. Yapay zeka destekli üniversite karşılaştırması, derin araştırma ve kişiselleştirilmiş tercih optimizasyonu.",
     images: ["/og-image.png"], // Same image as OpenGraph
     creator: "@tercihify", // Replace with your actual Twitter handle
   },

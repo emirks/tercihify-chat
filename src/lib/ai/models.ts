@@ -41,6 +41,13 @@ const staticModels = {
         "openai/gpt-4.1",
       ],
     }),
+    "openai/gpt-oss-120b": openrouter("openai/gpt-oss-120b"),
+    "deepseek/deepseek-chat-v3-0324:free": openrouter(
+      "deepseek/deepseek-chat-v3-0324:free",
+    ),
+    "anthropic/claude-sonnet-4": openrouter("anthropic/claude-sonnet-4"),
+    "google/gemini-2.5-pro": openrouter("google/gemini-2.5-pro"),
+    "google/gemini-2.5-flash": openrouter("google/gemini-2.5-flash"),
   },
   google: {
     "gemini-2.5-pro": google("gemini-2.5-pro"),

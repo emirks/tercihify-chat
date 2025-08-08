@@ -19,6 +19,7 @@ import { AppSidebarThreads } from "./app-sidebar-threads";
 
 import { isShortcutEvent, Shortcuts } from "lib/keyboard-shortcuts";
 import { AppSidebarUser } from "./app-sidebar-user";
+import { AppSidebarSocial } from "./app-sidebar-social";
 import { PanelLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Session, User } from "better-auth";
@@ -92,6 +93,7 @@ export function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <AppSidebarSocial />
       </SidebarHeader>
 
       <SidebarContent className="mt-2 overflow-hidden relative">

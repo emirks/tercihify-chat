@@ -39,6 +39,7 @@ const staticModels = {
       {
         models: [
           "openrouter/horizon-beta",
+          "deepseek/deepseek-chat-v3-0324",
           "google/gemini-2.5-flash",
           "openai/gpt-4.1",
         ],
@@ -47,6 +48,7 @@ const staticModels = {
     "openrouter/horizon": openrouter("openrouter/horizon-beta", {
       models: [
         "deepseek/deepseek-chat-v3-0324:free",
+        "deepseek/deepseek-chat-v3-0324",
         "google/gemini-2.5-flash",
         "openai/gpt-4.1",
       ],

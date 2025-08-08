@@ -5,6 +5,14 @@ import { PreBlock } from "./pre-block";
 import { isJson, isString, toAny } from "lib/utils";
 import JsonView from "ui/json-view";
 import { LinkIcon } from "lucide-react";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "ui/table";
 
 const FadeIn = memo(({ children }: PropsWithChildren) => {
   return <span className="fade-in animate-in duration-1000">{children} </span>;
@@ -141,6 +149,42 @@ const components: Partial<Components> = {
       // eslint-disable-next-line @next/next/no-img-element
       <img className="mx-auto rounded-lg" src={src} alt={alt} {...rest} />
     ) : null;
+  },
+  // Add table components
+  table: ({ children, ...props }) => {
+    return (
+      <div className="my-6 w-full">
+        <Table
+          className="w-full [counter-reset:table-row] [&_tbody_tr]:[counter-increment:table-row] [&_tbody_tr_td:first-child]:before:content-[counter(table-row)] [&_tbody_tr_td:first-child]:before:inline-block [&_tbody_tr_td:first-child]:before:w-8 [&_tbody_tr_td:first-child]:before:text-center [&_tbody_tr_td:first-child]:before:text-muted-foreground [&_tbody_tr_td:first-child]:before:text-sm [&_tbody_tr_td:first-child]:before:font-mono [&_tbody_tr_td:first-child]:before:mr-3 [&_tbody_tr_td:first-child]:before:pr-3 [&_tbody_tr_td:first-child]:before:border-r [&_tbody_tr_td:first-child]:before:border-border"
+          {...props}
+        >
+          {children}
+        </Table>
+      </div>
+    );
+  },
+  thead: ({ children, ...props }) => {
+    return <TableHeader {...props}>{children}</TableHeader>;
+  },
+  tbody: ({ children, ...props }) => {
+    return <TableBody {...props}>{children}</TableBody>;
+  },
+  tr: ({ children, ...props }) => {
+    return <TableRow {...props}>{children}</TableRow>;
+  },
+  th: ({ children, ...props }) => {
+    return (
+      <TableHead className="whitespace-normal break-words" {...props}>
+        {children}
+      </TableHead>
+    );
+  },
+  td: ({ children, ...props }) => {
+    return (
+      <TableCell className="whitespace-normal break-words" {...props}>
+        {children}
+      </TableCell>
+    );
   },
 };
 

@@ -304,6 +304,7 @@ For ANY university-related question, follow this exact sequence:
 - Use markdown table format with proper alignment
 - Sort by taban sıralama (best to worst within each category)
 - Include all relevant columns: Program Name, University, City, Taban Sıralama
+- DO NOT include row numbers or numbering - the UI will handle numbering automatically
 - Add brief summary after each table (e.g., "Bu kategoride X program bulundu")
 - Highlight geographic distribution and fee patterns in analysis
 

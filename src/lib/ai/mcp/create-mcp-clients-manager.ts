@@ -49,6 +49,81 @@ export class MCPClientsManager {
     process.on("SIGTERM", this.cleanup.bind(this));
   }
 
+  /**
+   * Performs a health check on a specific MCP client by calling a health check tool
+   */
+  async performHealthCheck(clientId: string): Promise<boolean> {
+    try {
+      const clientEntry = this.clients.get(clientId);
+      if (!clientEntry) {
+        return false;
+      }
+
+      const client = clientEntry.client;
+      const info = client.getInfo();
+
+      // First check if client is connected
+      if (info.status !== "connected") {
+        logger.info(
+          `MCP client ${clientEntry.name} is not connected (status: ${info.status})`,
+        );
+        return false;
+      }
+
+      // Try to call the health_check tool if it exists
+      const hasHealthCheckTool = info.toolInfo.some(
+        (tool) => tool.name === "health_check",
+      );
+      if (!hasHealthCheckTool) {
+        logger.info(
+          `MCP client ${clientEntry.name} doesn't have health_check tool, assuming healthy`,
+        );
+        return true; // If no health check tool, assume it's healthy if connected
+      }
+
+      // Call the health check tool
+      const result = await client.callTool("health_check", {});
+
+      // Check if the result indicates healthy status
+      if (result?.content && Array.isArray(result.content)) {
+        for (const content of result.content) {
+          if (content?.type === "text" && content?.text) {
+            try {
+              const healthData =
+                typeof content.text === "string"
+                  ? JSON.parse(content.text)
+                  : content.text;
+
+              if (healthData?.status === "healthy") {
+                logger.info(
+                  `MCP client ${clientEntry.name} health check passed`,
+                );
+                return true;
+              }
+            } catch (_parseError) {
+              // If JSON parsing fails, check if the text directly indicates health
+              if (
+                typeof content.text === "string" &&
+                content.text.includes("healthy")
+              ) {
+                logger.info(
+                  `MCP client ${clientEntry.name} health check passed (text contains 'healthy')`,
+                );
+                return true;
+              }
+            }
+          }
+        }
+      }
+
+      logger.info(`MCP client ${clientEntry.name} health check failed`);
+      return false;
+    } catch (error) {
+      logger.error(`Health check failed for client ${clientId}:`, error);
+      return false;
+    }
+  }
+
   async init() {
     logger.info("Initializing MCP clients manager");
     if (this.initializedLock.isLocked) {
@@ -69,43 +144,84 @@ export class MCPClientsManager {
             ),
           );
 
-          // Check for existing yokatlas-mcp servers and remove duplicates
+          // Check for existing yokatlas-mcp servers and handle them intelligently
           const existingClients = Array.from(this.clients.entries());
           const yokAtlasMcpClients = existingClients.filter(
             ([_, { name }]) => name === "yokatlas-mcp",
           );
 
+          let shouldCreateNewYokatlasClient = true;
+
           if (yokAtlasMcpClients.length > 0) {
             logger.info(
-              `🔧 Found ${yokAtlasMcpClients.length} existing yokatlas-mcp server(s), removing duplicates`,
+              `🔧 Found ${yokAtlasMcpClients.length} existing yokatlas-mcp server(s), checking health`,
             );
-            // Remove all existing yokatlas-mcp clients
-            await Promise.allSettled(
-              yokAtlasMcpClients.map(([id]) => this.removeClient(id)),
-            );
+
+            // Check if any of the existing yokatlas clients are healthy
+            for (const [id] of yokAtlasMcpClients) {
+              const isHealthy = await this.performHealthCheck(id);
+              if (isHealthy) {
+                logger.info(
+                  `🔧 Existing yokatlas-mcp server ${id} is healthy, keeping it`,
+                );
+                shouldCreateNewYokatlasClient = false;
+
+                // Remove other yokatlas clients but keep this healthy one
+                const otherYokatlasClients = yokAtlasMcpClients.filter(
+                  ([otherId]) => otherId !== id,
+                );
+                if (otherYokatlasClients.length > 0) {
+                  logger.info(
+                    `🔧 Removing ${otherYokatlasClients.length} duplicate yokatlas-mcp servers`,
+                  );
+                  await Promise.allSettled(
+                    otherYokatlasClients.map(([otherId]) =>
+                      this.removeClient(otherId),
+                    ),
+                  );
+                }
+                break;
+              } else {
+                logger.info(
+                  `🔧 Yokatlas-mcp server ${id} is unhealthy, will remove it`,
+                );
+              }
+            }
+
+            // If no healthy clients found, remove all and create new one
+            if (shouldCreateNewYokatlasClient) {
+              logger.info(
+                "🔧 No healthy yokatlas-mcp servers found, removing all and creating new one",
+              );
+              await Promise.allSettled(
+                yokAtlasMcpClients.map(([id]) => this.removeClient(id)),
+              );
+            }
           }
 
-          // Always create the allowed yokatlas-mcp server with correct configuration
-          logger.info(
-            "🔧 Adding default yokatlas-mcp server with allowed configuration",
-          );
+          // Create new yokatlas-mcp server only if needed
+          if (shouldCreateNewYokatlasClient) {
+            logger.info(
+              "🔧 Adding default yokatlas-mcp server with allowed configuration",
+            );
 
-          // Read MCP URL from environment variable with fallback to remote URL
-          const mcpUrl =
-            process.env.YOKATLAS_MCP_URL ||
-            "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr";
+            // Read MCP URL from environment variable with fallback to remote URL
+            const mcpUrl =
+              process.env.YOKATLAS_MCP_URL ||
+              "https://server.smithery.ai/@emirks/yokatlas-mcp-typescript/mcp?api_key=be0c4a7c-9d9e-4ba2-aefb-6b05847d40d3&profile=roasted-clownfish-W6WDNr";
 
-          logger.info(
-            `🔧 Using yokatlas-mcp URL: ${mcpUrl.includes("localhost") ? "LOCAL" : "REMOTE"}`,
-          );
+            logger.info(
+              `🔧 Using yokatlas-mcp URL: ${mcpUrl.includes("localhost") ? "LOCAL" : "REMOTE"}`,
+            );
 
-          await this.persistClient({
-            name: "yokatlas-mcp",
-            config: {
-              url: mcpUrl,
-            },
-            // enabled: true,
-          });
+            await this.persistClient({
+              name: "yokatlas-mcp",
+              config: {
+                url: mcpUrl,
+              },
+              // enabled: true,
+            });
+          }
         }
       })
       .watch(() => {

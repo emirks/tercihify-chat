@@ -288,22 +288,22 @@ For ANY university-related question, follow this exact sequence:
 🎯 **GÜVENLE GİREBİLECEĞİNİZ PROGRAMLAR (Kesin Kabul):**
 - Programs where user's ranking < program's taban sıralama (user performs BETTER)
 - Example: User ranking 790, program taban sıralama 945 → GÜVENLI (790 < 945)
-- Present as formatted table with columns: Program | University | City | Taban Sıralama | Kontenjan | Ücret | Durumu
+- Present as formatted table with columns: Program | University | City | Taban Sıralama
 
 🚀 **HEDEF PROGRAMLARı (Rekabetçi Seçenekler):**
 - Programs where user's ranking ≈ program's taban sıralama (within ±50 range)
 - Example: User ranking 790, program taban sıralama 750-830 → REKABETÇİ
-- Present as formatted table with columns: Program | University | City | Taban Sıralama | Kontenjan | Ücret | Durumu
+- Present as formatted table with columns: Program | University | City | Taban Sıralama
 
 🌟 **HEDEF ÜSTÜ PROGRAMLAR (Tercih Listesi Başına Yazılacak):**
 - Programs where user's ranking > program's taban sıralama (user performs WORSE)
 - Example: User ranking 790, program taban sıralama 452 → HEDEF ÜSTÜ (790 > 452)
-- Present as formatted table with columns: Program | University | City | Taban Sıralama | Kontenjan | Ücret | Durumu
+- Present as formatted table with columns: Program | University | City | Taban Sıralama
 
 **TABLE FORMATTING RULES:**
 - Use markdown table format with proper alignment
 - Sort by taban sıralama (best to worst within each category)
-- Include all relevant columns: Program Name, University, City, Taban Sıralama, Kontenjan, Ücret Status, Program Status
+- Include all relevant columns: Program Name, University, City, Taban Sıralama
 - Add brief summary after each table (e.g., "Bu kategoride X program bulundu")
 - Highlight geographic distribution and fee patterns in analysis
 
